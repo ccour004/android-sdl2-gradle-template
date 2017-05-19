@@ -1,0 +1,6 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainX86_64DebugSharedLibraryMainX86_64DebugSharedLibraryMainC/output.txt for all output for compileMainX86_64DebugSharedLibraryMainX86_64DebugSharedLibraryMainC.
+compiling SDL_android_main.c successful.
+
+compiling clew.c successful.
+
+Finished compileMainX86_64DebugSharedLibraryMainX86_64DebugSharedLibraryMainC, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainX86_64DebugSharedLibraryMainX86_64DebugSharedLibraryMainC/output.txt.

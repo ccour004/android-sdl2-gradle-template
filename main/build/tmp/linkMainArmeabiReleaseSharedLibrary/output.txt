@@ -1,0 +1,4 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainArmeabiReleaseSharedLibrary/output.txt for all output for linkMainArmeabiReleaseSharedLibrary.
+linking libmain.so successful.
+
+Finished linkMainArmeabiReleaseSharedLibrary, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainArmeabiReleaseSharedLibrary/output.txt.

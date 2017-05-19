@@ -1,0 +1,4 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainMipsReleaseSharedLibrary/output.txt for all output for linkMainMipsReleaseSharedLibrary.
+linking libmain.so successful.
+
+Finished linkMainMipsReleaseSharedLibrary, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainMipsReleaseSharedLibrary/output.txt.

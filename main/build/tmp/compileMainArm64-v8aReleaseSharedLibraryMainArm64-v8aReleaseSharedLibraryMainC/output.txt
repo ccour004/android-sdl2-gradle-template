@@ -1,0 +1,6 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArm64-v8aReleaseSharedLibraryMainArm64-v8aReleaseSharedLibraryMainC/output.txt for all output for compileMainArm64-v8aReleaseSharedLibraryMainArm64-v8aReleaseSharedLibraryMainC.
+compiling SDL_android_main.c successful.
+
+compiling clew.c successful.
+
+Finished compileMainArm64-v8aReleaseSharedLibraryMainArm64-v8aReleaseSharedLibraryMainC, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArm64-v8aReleaseSharedLibraryMainArm64-v8aReleaseSharedLibraryMainC/output.txt.

@@ -1,0 +1,8 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArm64-v8aDebugSharedLibraryMainArm64-v8aDebugSharedLibraryMainCpp/output.txt for all output for compileMainArm64-v8aDebugSharedLibraryMainArm64-v8aDebugSharedLibraryMainCpp.
+compiling main.cpp successful.
+/home/colin/git/android-sdl2-gradle-template/main/src/main.cpp: In function 'void render()':
+/home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:112:28: warning: passing NULL to non-pointer argument 1 of 'void glUseProgram(GLuint)' [-Wconversion-null]
+         glUseProgram( NULL );
+                            ^
+
+Finished compileMainArm64-v8aDebugSharedLibraryMainArm64-v8aDebugSharedLibraryMainCpp, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArm64-v8aDebugSharedLibraryMainArm64-v8aDebugSharedLibraryMainCpp/output.txt.

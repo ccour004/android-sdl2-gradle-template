@@ -1,0 +1,4 @@
+See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainArm64-v8aDebugSharedLibrary/output.txt for all output for linkMainArm64-v8aDebugSharedLibrary.
+linking libmain.so successful.
+
+Finished linkMainArm64-v8aDebugSharedLibrary, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/linkMainArm64-v8aDebugSharedLibrary/output.txt.
