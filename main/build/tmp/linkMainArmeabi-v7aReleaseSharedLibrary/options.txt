@@ -170,6 +170,7 @@
 -L/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/stlport/libs/armeabi-v7a
 -lstlport_static
 -no-canonical-prefixes
+-lstlport_static
 -lGLESv1_CM
 -lEGL
 -lGLESv2

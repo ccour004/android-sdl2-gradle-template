@@ -171,6 +171,7 @@
 -lstlport_static
 -no-canonical-prefixes
 -mips32
+-lstlport_static
 -lGLESv1_CM
 -lEGL
 -lGLESv2

@@ -1,23 +1,103 @@
 #include "SDL.h"
 #include "BulletSim.h"
+#include "ShapeCreator.h"
 
-#include <GLES3/gl3.h>
+#include <GLES/gl.h>
 
-//Initializes rendering program and clear color
-bool initGL();
+/* Following gluLookAt implementation is adapted from the
+ * Mesa 3D Graphics library. http://www.mesa3d.org
+ */
+static void gluLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez,
+                      GLfloat centerx, GLfloat centery, GLfloat centerz,
+                      GLfloat upx, GLfloat upy, GLfloat upz)
+{
+    GLfloat m[16];
+    GLfloat x[3], y[3], z[3];
+    GLfloat mag;
 
-//Shader loading utility programs
-void printProgramLog( GLuint program );
-void printShaderLog( GLuint shader );
+    /* Make rotation matrix */
 
-//Render flag
-bool gRenderQuad = true;
+    /* Z vector */
+    z[0] = eyex - centerx;
+    z[1] = eyey - centery;
+    z[2] = eyez - centerz;
+    mag = (float)sqrt(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
+    if (mag) {			/* mpichler, 19950515 */
+        z[0] /= mag;
+        z[1] /= mag;
+        z[2] /= mag;
+    }
 
-//Graphics program
-GLuint gProgramID = 0;
-GLint gVertexPos2DLocation = -1;
-GLuint gVBO = 0;
-GLuint gIBO = 0;
+    /* Y vector */
+    y[0] = upx;
+    y[1] = upy;
+    y[2] = upz;
+
+    /* X vector = Y cross Z */
+    x[0] = y[1] * z[2] - y[2] * z[1];
+    x[1] = -y[0] * z[2] + y[2] * z[0];
+    x[2] = y[0] * z[1] - y[1] * z[0];
+
+    /* Recompute Y = Z cross X */
+    y[0] = z[1] * x[2] - z[2] * x[1];
+    y[1] = -z[0] * x[2] + z[2] * x[0];
+    y[2] = z[0] * x[1] - z[1] * x[0];
+
+    /* mpichler, 19950515 */
+    /* cross product gives area of parallelogram, which is < 1.0 for
+     * non-perpendicular unit-length vectors; so normalize x, y here
+     */
+
+    mag = (float)sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+    if (mag) {
+        x[0] /= mag;
+        x[1] /= mag;
+        x[2] /= mag;
+    }
+
+    mag = (float)sqrt(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
+    if (mag) {
+        y[0] /= mag;
+        y[1] /= mag;
+        y[2] /= mag;
+    }
+
+#define M(row,col)  m[col*4+row]
+    M(0, 0) = x[0];
+    M(0, 1) = x[1];
+    M(0, 2) = x[2];
+    M(0, 3) = 0.0;
+    M(1, 0) = y[0];
+    M(1, 1) = y[1];
+    M(1, 2) = y[2];
+    M(1, 3) = 0.0;
+    M(2, 0) = z[0];
+    M(2, 1) = z[1];
+    M(2, 2) = z[2];
+    M(2, 3) = 0.0;
+    M(3, 0) = 0.0;
+    M(3, 1) = 0.0;
+    M(3, 2) = 0.0;
+    M(3, 3) = 1.0;
+#undef M
+    {
+        int a;
+        GLfixed fixedM[16];
+        for (a = 0; a < 16; ++a)
+            fixedM[a] = (GLfixed)(m[a] * 65536);
+        glMultMatrixx(fixedM);
+    }
+
+    /* Translate Eye to Origin */
+    glTranslatex((GLfixed)(-eyex * 65536),
+                 (GLfixed)(-eyey * 65536),
+                 (GLfixed)(-eyez * 65536));
+}
+
+MeshBuilder modelBuilder;
+Shader shader;
+Mesh mesh;
+MeshInstance* instance;
 
 class SDL_Manager{
 public:
@@ -49,6 +129,8 @@ public:
         // Turn on double buffering with a 24bit Z buffer.
         // You may need to change this to 16 or 32 for your system
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
 
         //Use Vsync
         if( SDL_GL_SetSwapInterval( 1 ) < 0 )
@@ -57,11 +139,22 @@ public:
         }
 
         //Initialize OpenGL
-        if( !initGL() )
-        {
-            SDL_Log( "Unable to initialize OpenGL!\n" );
-            success = false;
-        }else SDL_Log("Initialized OpenGL!\n");
+        SDL_Log("++INIT GL++");
+
+        //Setup gl settings.
+        glClearDepthf(1.0f);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        //glViewport(0, 0, 640, 513);
+        glClearColor( 0.f, 0.f, 0.f, 1.f );
+
+        //Init meshes.
+        shader.init();
+        mesh = modelBuilder.build(2,2,2,20,20);
+        mesh.init();
+
+        instance = new MeshInstance(&mesh,&shader,btVector3(0,0,0));
     }
 
     ~SDL_Manager(){
@@ -84,222 +177,8 @@ int err(const char* fmt){
 
 void render()
 {
-    //Clear color buffer
-    glClear( GL_COLOR_BUFFER_BIT );
-
-    //Render quad
-    if( gRenderQuad )
-    {
-        //Bind program
-        glUseProgram( gProgramID );
-
-        //Enable vertex position
-        glEnableVertexAttribArray( gVertexPos2DLocation );
-
-        //Set vertex data
-        glBindBuffer( GL_ARRAY_BUFFER, gVBO );
-        glVertexAttribPointer( gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL );
-
-        //Set index data and render
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
-        glDrawElements( GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL );
-
-        //Disable vertex position
-        glDisableVertexAttribArray( gVertexPos2DLocation );
-
-        //Unbind program
-        glUseProgram( NULL );
-    }
-}
-
-bool initGL()
-{
-    SDL_Log("++INIT GL++");
-    //Success flag
-    bool success = true;
-
-    //Generate program
-    gProgramID = glCreateProgram();
-
-    //Create vertex shader
-    GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
-
-    //Get vertex source
-    const GLchar* vertexShaderSource[] =
-            {
-                    "#version 300 es\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }"
-            };
-
-    //Set vertex source
-    glShaderSource( vertexShader, 1, vertexShaderSource, NULL );
-
-    //Compile vertex source
-    glCompileShader( vertexShader );
-
-    //Check vertex shader for errors
-    GLint vShaderCompiled = GL_FALSE;
-    glGetShaderiv( vertexShader, GL_COMPILE_STATUS, &vShaderCompiled );
-    if( vShaderCompiled != GL_TRUE )
-    {
-        SDL_Log("Unable to compile vertex shader %d!\n", vertexShader );
-        printShaderLog( vertexShader );
-        success = false;
-    }
-    else
-    {
-        //Attach vertex shader to program
-        glAttachShader( gProgramID, vertexShader );
-
-
-        //Create fragment shader
-        GLuint fragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-
-        //Get fragment source
-        const GLchar* fragmentShaderSource[] =
-                {
-                        "#version 300 es\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
-                };
-
-        //Set fragment source
-        glShaderSource( fragmentShader, 1, fragmentShaderSource, NULL );
-
-        //Compile fragment source
-        glCompileShader( fragmentShader );
-
-        //Check fragment shader for errors
-        GLint fShaderCompiled = GL_FALSE;
-        glGetShaderiv( fragmentShader, GL_COMPILE_STATUS, &fShaderCompiled );
-        if( fShaderCompiled != GL_TRUE )
-        {
-            SDL_Log( "Unable to compile fragment shader %d!\n", fragmentShader );
-            printShaderLog( fragmentShader );
-            success = false;
-        }
-        else
-        {
-            //Attach fragment shader to program
-            glAttachShader( gProgramID, fragmentShader );
-
-
-            //Link program
-            glLinkProgram( gProgramID );
-
-            //Check for errors
-            GLint programSuccess = GL_TRUE;
-            glGetProgramiv( gProgramID, GL_LINK_STATUS, &programSuccess );
-            if( programSuccess != GL_TRUE )
-            {
-                SDL_Log( "Error linking program %d!\n", gProgramID );
-                printProgramLog( gProgramID );
-                success = false;
-            }
-            else
-            {
-                //Get vertex attribute location
-                gVertexPos2DLocation = glGetAttribLocation( gProgramID, "LVertexPos2D" );
-                if( gVertexPos2DLocation == -1 )
-                {
-                    SDL_Log( "LVertexPos2D is not a valid glsl program variable!\n" );
-                    success = false;
-                }
-                else
-                {
-                    //Initialize clear color
-                    glClearColor( 0.f, 0.f, 0.f, 1.f );
-
-                    //VBO data
-                    GLfloat vertexData[] =
-                            {
-                                    -0.5f, -0.5f,
-                                    0.5f, -0.5f,
-                                    0.5f,  0.5f,
-                                    -0.5f,  0.5f
-                            };
-
-                    //IBO data
-                    GLuint indexData[] = { 0, 1, 2, 3 };
-
-                    //Create VBO
-                    glGenBuffers( 1, &gVBO );
-                    glBindBuffer( GL_ARRAY_BUFFER, gVBO );
-                    glBufferData( GL_ARRAY_BUFFER, 2 * 4 * sizeof(GLfloat), vertexData, GL_STATIC_DRAW );
-
-                    //Create IBO
-                    glGenBuffers( 1, &gIBO );
-                    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
-                    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), indexData, GL_STATIC_DRAW );
-
-                    SDL_Log("##DONE##");
-                }
-            }
-        }
-    }
-
-    return success;
-}
-
-void printProgramLog( GLuint program )
-{
-    //Make sure name is shader
-    if( glIsProgram( program ) )
-    {
-        //Program log length
-        int infoLogLength = 0;
-        int maxLength = infoLogLength;
-
-        //Get info string length
-        glGetProgramiv( program, GL_INFO_LOG_LENGTH, &maxLength );
-
-        //Allocate string
-        char* infoLog = new char[ maxLength ];
-
-        //Get info log
-        glGetProgramInfoLog( program, maxLength, &infoLogLength, infoLog );
-        if( infoLogLength > 0 )
-        {
-            //Print Log
-            SDL_Log( "%s\n", infoLog );
-        }
-
-        //Deallocate string
-        delete[] infoLog;
-    }
-    else
-    {
-        SDL_Log( "Name %d is not a program\n", program );
-    }
-}
-
-void printShaderLog( GLuint shader )
-{
-    //Make sure name is shader
-    if( glIsShader( shader ) )
-    {
-        //Shader log length
-        int infoLogLength = 0;
-        int maxLength = infoLogLength;
-
-        //Get info string length
-        glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
-
-        //Allocate string
-        char* infoLog = new char[ maxLength ];
-
-        //Get info log
-        glGetShaderInfoLog( shader, maxLength, &infoLogLength, infoLog );
-        if( infoLogLength > 0 )
-        {
-            //Print Log
-            SDL_Log( "%s\n", infoLog );
-        }
-
-        //Deallocate string
-        delete[] infoLog;
-    }
-    else
-    {
-        SDL_Log( "Name %d is not a shader\n", shader );
-    }
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    instance->render();
 }
 
 int main(int argc, char* argv[])
@@ -313,7 +192,7 @@ int main(int argc, char* argv[])
     //Main loop.
     SDL_Event e;
     bool quit = false;
-    SDL_StartTextInput();
+    //SDL_StartTextInput();
 
     //!!! THIS WORKS !!!
     //BulletSim* sim = new BulletSim;
@@ -334,7 +213,6 @@ int main(int argc, char* argv[])
         }
 
         render();
-
         SDL_GL_SwapWindow(sdl->window);
     }
 

@@ -19,6 +19,7 @@ c++
 -fstrict-aliasing
 -funswitch-loops
 -finline-limit=300
+-fpermissive
 -I/home/colin/git/android-sdl2-gradle-template/SDL2/include
 -I/home/colin/git/android-sdl2-gradle-template/bullet3/include
 -I

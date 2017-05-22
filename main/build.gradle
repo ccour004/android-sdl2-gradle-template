@@ -33,7 +33,8 @@ model {
         }
         ndk {
             moduleName = 'main'
-            ldLibs.addAll(["GLESv1_CM", "EGL", "GLESv2","GLESv3", "log", "android", "dl"])
+            ldLibs.addAll(["stlport_static","GLESv1_CM", "EGL", "GLESv2","GLESv3", "log", "android", "dl"])
+            cppFlags.addAll(["-fpermissive"])
             cppFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             CFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             cppFlags.addAll(["-I" + file("../bullet3/include/").absolutePath])
@@ -49,7 +50,7 @@ model {
                         //library 'bullet3' linkage 'static'
                     }
                     source {
-			srcDirs 'src/'
+			            srcDirs 'src/'
                         srcDirs '../SDL2/src/main/android/'
                         srcDirs '../bullet3/src/'
                     }

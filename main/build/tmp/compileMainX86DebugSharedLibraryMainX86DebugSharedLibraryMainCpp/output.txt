@@ -1,8 +1,29 @@
 See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainX86DebugSharedLibraryMainX86DebugSharedLibraryMainCpp/output.txt for all output for compileMainX86DebugSharedLibraryMainX86DebugSharedLibraryMainCpp.
 compiling main.cpp successful.
-/home/colin/git/android-sdl2-gradle-template/main/src/main.cpp: In function 'void render()':
-/home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:112:28: warning: passing NULL to non-pointer argument 1 of 'void glUseProgram(GLuint)' [-Wconversion-null]
-         glUseProgram( NULL );
+In file included from /home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:3:0:
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:7:25: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLuint gProgramID = 0;
+                         ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:8:35: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint gVertexPos2DLocation = -1,gVertexTransformLocation = -1;
+                                   ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:8:65: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint gVertexPos2DLocation = -1,gVertexTransformLocation = -1;
+                                                                 ^
+In file included from /home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:3:0:
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:164:19: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLuint gVBO = 0,gIBO = 0;
+                   ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:164:28: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLuint gVBO = 0,gIBO = 0;
                             ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: In member function 'void MeshInstance::render()':
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:254:30: warning: passing NULL to non-pointer argument 1 of 'void glUseProgram(GLuint)' [-Wconversion-null]
+             glUseProgram(NULL);
+                              ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: At global scope:
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:263:43: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     float degreesToRadians = 3.1415927f / 180.0f;
+                                           ^
 
 Finished compileMainX86DebugSharedLibraryMainX86DebugSharedLibraryMainCpp, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainX86DebugSharedLibraryMainX86DebugSharedLibraryMainCpp/output.txt.
