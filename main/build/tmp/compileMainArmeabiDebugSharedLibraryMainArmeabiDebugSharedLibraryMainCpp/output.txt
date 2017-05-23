@@ -1,28 +1,69 @@
 See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainCpp/output.txt for all output for compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainCpp.
 compiling main.cpp successful.
 In file included from /home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:3:0:
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:7:25: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:12:25: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
      GLuint gProgramID = 0;
                          ^
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:8:35: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
-     GLint gVertexPos2DLocation = -1,gVertexTransformLocation = -1;
-                                   ^
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:8:65: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
-     GLint gVertexPos2DLocation = -1,gVertexTransformLocation = -1;
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:14:26: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint positionLoc = -1,modelLoc = -1,viewLoc = -1,projLoc = -1;
+                          ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:14:40: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint positionLoc = -1,modelLoc = -1,viewLoc = -1,projLoc = -1;
+                                        ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:14:53: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint positionLoc = -1,modelLoc = -1,viewLoc = -1,projLoc = -1;
+                                                     ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:14:66: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint positionLoc = -1,modelLoc = -1,viewLoc = -1,projLoc = -1;
+                                                                  ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:15:21: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint eyeLoc = -1,centerLoc = -1,upLoc = -1;
+                     ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:15:36: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint eyeLoc = -1,centerLoc = -1,upLoc = -1;
+                                    ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:15:47: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     GLint eyeLoc = -1,centerLoc = -1,upLoc = -1;
+                                               ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:29: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+                             ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:49: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+                                                 ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:65: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
                                                                  ^
-In file included from /home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:3:0:
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:164:19: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:18:25: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+     float aspectRatio = 0.6182f;
+                         ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:29: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+                             ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:49: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+                                                 ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:17:65: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+     float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+                                                                 ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: In member function 'bool Shader::setViewMatrix(btVector3, btVector3, btVector3)':
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:57:35: warning: extended initializer lists only available with -std=c++11 or -std=gnu++11
+         viewMatrix = new float[16]{xaxis.x(),yaxis.x(),zaxis.x(),0,
+                                   ^
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: At global scope:
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:243:19: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
      GLuint gVBO = 0,gIBO = 0;
                    ^
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:164:28: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:243:28: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
      GLuint gVBO = 0,gIBO = 0;
                             ^
+In file included from /home/colin/git/android-sdl2-gradle-template/main/src/main.cpp:3:0:
 /home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: In member function 'void MeshInstance::render()':
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:254:30: warning: passing NULL to non-pointer argument 1 of 'void glUseProgram(GLuint)' [-Wconversion-null]
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:341:30: warning: passing NULL to non-pointer argument 1 of 'void glUseProgram(GLuint)' [-Wconversion-null]
              glUseProgram(NULL);
                               ^
 /home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h: At global scope:
-/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:263:43: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
+/home/colin/git/android-sdl2-gradle-template/main/src/ShapeCreator.h:350:43: warning: non-static data member initializers only available with -std=c++11 or -std=gnu++11
      float degreesToRadians = 3.1415927f / 180.0f;
                                            ^
 

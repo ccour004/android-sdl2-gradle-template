@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 import android.app.*;
 import android.content.*;
+import android.content.res.AssetManager;
 import android.text.InputType;
 import android.view.*;
 import android.view.inputmethod.BaseInputConnection;
@@ -115,6 +116,8 @@ public class SDLActivity extends Activity {
         mHasFocus = true;
     }
 
+    private AssetManager mgr;
+
     // Setup
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,8 @@ public class SDLActivity extends Activity {
         Log.v(TAG, "Model: " + android.os.Build.MODEL);
         Log.v(TAG, "onCreate(): " + mSingleton);
         super.onCreate(savedInstanceState);
+
+        mgr = getResources().getAssets();
 
         SDLActivity.initialize();
         // So we can call stuff from static callbacks
@@ -410,7 +415,7 @@ public class SDLActivity extends Activity {
     }
 
     // C functions we call
-    public static native int nativeInit(Object arguments);
+    public static native int nativeInit(Object arguments,Object am);
     public static native void nativeLowMemory();
     public static native void nativeQuit();
     public static native void nativePause();
@@ -1022,10 +1027,14 @@ public class SDLActivity extends Activity {
  Simple nativeInit() runnable
  */
 class SDLMain implements Runnable {
+    AssetManager am;
+    public SDLMain(AssetManager am){
+        this.am = am;
+    }
     @Override
     public void run() {
         // Runs SDL_main()
-        SDLActivity.nativeInit(SDLActivity.mSingleton.getArguments());
+        SDLActivity.nativeInit(SDLActivity.mSingleton.getArguments(),am);
 
         //Log.v("SDL", "SDL thread terminated");
     }
@@ -1206,7 +1215,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
             // This is the entry point to the C app.
             // Start up the C app thread and enable sensor input for the first time
 
-            final Thread sdlThread = new Thread(new SDLMain(), "SDLThread");
+            final Thread sdlThread = new Thread(new SDLMain(getResources().getAssets()), "SDLThread");
             enableSensor(Sensor.TYPE_ACCELEROMETER, true);
             sdlThread.start();
 

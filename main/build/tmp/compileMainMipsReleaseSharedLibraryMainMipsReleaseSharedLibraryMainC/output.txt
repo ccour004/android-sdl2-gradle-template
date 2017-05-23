@@ -1,6 +1,4 @@
 See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainMipsReleaseSharedLibraryMainMipsReleaseSharedLibraryMainC/output.txt for all output for compileMainMipsReleaseSharedLibraryMainMipsReleaseSharedLibraryMainC.
 compiling SDL_android_main.c successful.
 
-compiling clew.c successful.
-
 Finished compileMainMipsReleaseSharedLibraryMainMipsReleaseSharedLibraryMainC, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainMipsReleaseSharedLibraryMainMipsReleaseSharedLibraryMainC/output.txt.

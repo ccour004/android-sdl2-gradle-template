@@ -1,6 +1,4 @@
 See file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainC/output.txt for all output for compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainC.
 compiling SDL_android_main.c successful.
 
-compiling clew.c successful.
-
 Finished compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainC, see full log file:///home/colin/git/android-sdl2-gradle-template/main/build/tmp/compileMainArmeabiDebugSharedLibraryMainArmeabiDebugSharedLibraryMainC/output.txt.

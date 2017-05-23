@@ -6,8 +6,9 @@ c++
 -DANDROID_NDK
 -fno-rtti
 -fno-exceptions
--I/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/stlport/stlport
--I/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/../gabi++/include
+-I/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include
+-I/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include
+-I/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward
 -fpic
 -ffunction-sections
 -funwind-tables

@@ -167,10 +167,10 @@
 -Wl,-z,relro
 -Wl,-z,now
 -Wl,--build-id
--L/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/stlport/libs/armeabi-v7a
--lstlport_static
+-L/home/colin/Android/Sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a
+-lgnustl_shared
 -no-canonical-prefixes
--lstlport_static
+-lgnustl_shared
 -lGLESv1_CM
 -lEGL
 -lGLESv2

@@ -1,26 +1,84 @@
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btHashMap.h>
 #include <math.h>
+#include <sstream>
+#include <fstream>
 #include <GLES3/gl3.h>
+#include <android/asset_manager.h>
+
+using namespace std;
 
 struct Shader{
     GLuint gProgramID = 0;
-    GLint gVertexPos2DLocation = -1,gVertexTransformLocation = -1;
 public:
+    GLint positionLoc = -1,modelLoc = -1,viewLoc = -1,projLoc = -1;
+    GLint eyeLoc = -1,centerLoc = -1,upLoc = -1;
+    float* modelMatrix,*viewMatrix,*projMatrix;
+    float eye[3] = {0,0,3.0f},center[3] = {0,0,0},up[3] = {0,1,0};
+    float aspectRatio = 0.6182f;
+
+    bool setModelMatrix(float x,float y,float z){
+        modelMatrix = new float[16];
+        for(int i = 0;i < 16;i++)
+            switch(i){
+                case 0:case 5:case 10:case 15: modelMatrix[i] = 1.0f; break;
+                case 3: modelMatrix[i] = x;break;
+                case 7: modelMatrix[i] = y;break;
+                case 11: modelMatrix[i] = z;break;
+            }
+        return true;
+    }
+
+    bool setProjectionMatrix(float near,float far,float aspect,float fov){
+        projMatrix = new float[16];
+        float top = near * tan((M_PI*180.0f)*(fov/2.0f)),bottom = -top,
+                right = top * aspect,left = -right;
+        for(int i = 0;i < 16;i++)
+            switch(i){
+                case 0:projMatrix[i] = (2.0f * near) / (right - left);break;
+                case 2:projMatrix[i] = (right+left) / (right-left);break;
+                case 5:projMatrix[i] = (2.0f*near) / (top-bottom);break;
+                case 6:projMatrix[i] = (top+bottom) / (top-bottom);break;
+                case 10:projMatrix[i] = -(far+near) / (far-near);break;
+                case 11:projMatrix[i] = -(2.0f * far * near) / (far-near);break;
+                case 14:projMatrix[i] = -1.0f;break;
+                case 15:projMatrix[i] = 1.0f;break;
+                default:projMatrix[i] = 0.0f;
+            }
+        return true;
+    }
+
+    bool setViewMatrix(btVector3 eye,btVector3 target,btVector3 up){
+        btVector3 zaxis = btVector3(eye - target).normalized();
+        btVector3 xaxis = up.cross(zaxis).normalized();
+        btVector3 yaxis = zaxis.cross(xaxis);
+
+        // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+        viewMatrix = new float[16]{xaxis.x(),yaxis.x(),zaxis.x(),0,
+                                   xaxis.y(),yaxis.y(),zaxis.y(),0,
+                                   xaxis.z(),yaxis.z(),zaxis.z(),0,
+                                   -xaxis.dot(eye),-yaxis.dot(eye),-zaxis.dot(eye), 1};
+        return true;
+    }
     GLuint getProgramID(){return gProgramID;}
-    GLint getVertLocation(){return gVertexPos2DLocation;}
-    GLint getVertTransform(){return gVertexTransformLocation;}
     bool init() {
         //Generate program
         gProgramID = glCreateProgram();
         GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        const GLchar *vertexShaderSource[] =
-                {
-                        "#version 300 es\nin vec3 LVertexPos2D;void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, LVertexPos2D.z, 1 ); }"
-                        //"#version 300 es\nin vec3 LVertexPos2D; in uniform vec3 LVertexTransform; void main() { gl_Position = vec4(LVertexTransform,1) * vec4( LVertexPos2D.x, LVertexPos2D.y, LVertexPos2D.z, 1 ); }"
-                };
 
-        glShaderSource(vertexShader, 1, vertexShaderSource, NULL);
+        //Load shader from assets folder.
+        AAsset* asset = AAssetManager_open(mgr, "default.vert", AASSET_MODE_UNKNOWN);
+        long size = AAsset_getLength(asset);
+        char* buffer = (char*) malloc (sizeof(char)*size);
+        AAsset_read (asset,buffer,size);
+        AAsset_close(asset);
+
+        //Compile shader source.
+        string vs(buffer);
+        size_t pos = vs.find_last_of("}");
+        vs = vs.substr(0,pos+1);
+        const GLchar* ob1 = vs.c_str();
+        glShaderSource(vertexShader, 1, &ob1, NULL);
         glCompileShader(vertexShader);
 
         //Check vertex shader for errors
@@ -34,20 +92,22 @@ public:
             //Attach vertex shader to program
             glAttachShader(gProgramID, vertexShader);
 
-
             //Create fragment shader
             GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-            //Get fragment source
-            const GLchar *fragmentShaderSource[] =
-                    {
-                            "#version 300 es\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
-                    };
+            //Load shader from assets folder.
+            AAsset* asset = AAssetManager_open(mgr, "default.frag", AASSET_MODE_UNKNOWN);
+            long size = AAsset_getLength(asset);
+            char* buffer = (char*) malloc (sizeof(char)*size);
+            AAsset_read (asset,buffer,size);
+            AAsset_close(asset);
 
-            //Set fragment source
-            glShaderSource(fragmentShader, 1, fragmentShaderSource, NULL);
-
-            //Compile fragment source
+            //Compile shader source.
+            string vs(buffer);
+            size_t pos = vs.find_last_of("}");
+            vs = vs.substr(0,pos+1);
+            const GLchar* ob2 = vs.c_str();
+            glShaderSource(fragmentShader, 1, &ob2, NULL);
             glCompileShader(fragmentShader);
 
             //Check fragment shader for errors
@@ -72,18 +132,37 @@ public:
                     printProgramLog(gProgramID);
                     return false;
                 }else{
-                    gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D" );
-                    if( gVertexPos2DLocation == -1 )
+                    positionLoc = glGetAttribLocation(gProgramID, "position" );
+                    if(positionLoc == -1 )
                     {
-                        SDL_Log( "LVertexPos2D is not a valid glsl program variable!\n" );
+                        SDL_Log( "position is not a valid glsl program variable!\n" );
                         return false;
                     }
-                    /*gVertexTransformLocation = glGetUniformLocation(gProgramID, "LVertexTransform" );
-                    if( gVertexTransformLocation == -1 )
+
+                    projLoc = glGetUniformLocation(gProgramID, "m_projection");
+                    if(projLoc == -1 )
                     {
-                        SDL_Log( "LVertexTransform is not a valid glsl program variable!\n" );
+                        SDL_Log( "m_projection is not a valid glsl program variable!\n" );
                         return false;
-                    }*/
+                    }
+
+                    viewLoc = glGetUniformLocation(gProgramID, "m_view");
+                    if(viewLoc == -1 )
+                    {
+                        SDL_Log( "m_view is not a valid glsl program variable!\n" );
+                        return false;
+                    }
+
+                    modelLoc = glGetUniformLocation(gProgramID, "m_model");
+                    if(modelLoc == -1 )
+                    {
+                        SDL_Log( "m_model is not a valid glsl program variable!\n" );
+                        return false;
+                    }
+
+                    eyeLoc = glGetUniformLocation(gProgramID,"eye");
+                    centerLoc = glGetUniformLocation(gProgramID,"center");
+                    upLoc = glGetUniformLocation(gProgramID,"up");
                 }
             }
         }
@@ -165,6 +244,7 @@ struct Mesh {
 public:
     ~Mesh(){delete indicesGL; delete verticesGL;}
     void init(){
+        transform = btVector3(0,0,0);
         //VBO/IBO data
         getVertices();
         getIndices();
@@ -230,25 +310,32 @@ public:
         this->transform = transform;
     }
 
+    void resize(int width,int height){
+        shader->aspectRatio = ((float)width)/((float)height);
+    }
+
     void render(){
             //Bind program
             glUseProgram(shader->getProgramID());
 
+            //Set transform
+            glUniform3f(glGetUniformLocation(shader->getProgramID(),"eye"),shader->eye[0],shader->eye[1],shader->eye[2]);
+            glUniform3f(glGetUniformLocation(shader->getProgramID(),"center"),shader->center[0],shader->center[1],shader->center[2]);
+            glUniform3f(glGetUniformLocation(shader->getProgramID(),"up"),shader->up[0],shader->up[1],shader->up[2]);
+            glUniform4f(glGetUniformLocation(shader->getProgramID(),"view"),0.1f,100.0f,67.0f,shader->aspectRatio);
+
             //Enable vertex position
-            glEnableVertexAttribArray(shader->getVertLocation());
+            glEnableVertexAttribArray(shader->positionLoc);
 
             //Set vertex data
             glBindBuffer( GL_ARRAY_BUFFER, mesh->gVBO );
-            glVertexAttribPointer(shader->getVertLocation(), 3, GL_FLOAT, GL_FALSE,3 * sizeof(GLfloat), NULL );
-
-            //Set transform
-            //glVertexAttrib3f(shader->getVertTransform(),0,0,0);
+            glVertexAttribPointer(shader->positionLoc, 3, GL_FLOAT, GL_FALSE,3 * sizeof(GLfloat), NULL );
 
             //Render mesh one time.
             mesh->render();
 
             //Disable vertex position
-            glDisableVertexAttribArray(shader->getVertLocation());
+            glDisableVertexAttribArray(shader->positionLoc);
 
             //Unbind program
             glUseProgram(NULL);

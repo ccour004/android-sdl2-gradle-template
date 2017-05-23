@@ -33,13 +33,13 @@ model {
         }
         ndk {
             moduleName = 'main'
-            ldLibs.addAll(["stlport_static","GLESv1_CM", "EGL", "GLESv2","GLESv3", "log", "android", "dl"])
+            ldLibs.addAll(["gnustl_shared","GLESv1_CM", "EGL", "GLESv2","GLESv3", "log", "android", "dl"])
             cppFlags.addAll(["-fpermissive"])
             cppFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             CFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             cppFlags.addAll(["-I" + file("../bullet3/include/").absolutePath])
             CFlags.addAll(["-I" + file("../bullet3/include/").absolutePath])
-            stl "stlport_static"
+            stl "gnustl_shared"
         }
 
         sources {

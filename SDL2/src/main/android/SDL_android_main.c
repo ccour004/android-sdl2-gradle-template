@@ -8,6 +8,9 @@
 /* Include the SDL main definition header */
 #include "SDL_main.h"
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
 /*******************************************************************************
                  Functions called by JNI
 *******************************************************************************/
@@ -17,16 +20,18 @@
 extern void SDL_Android_Init(JNIEnv* env, jclass cls);
 
 /* This prototype is needed to prevent a warning about the missing prototype for global function below */
-JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject array);
+JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject array,jobject am);
 
 /* Start up the SDL app */
-JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject array)
+JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject array,jobject am)
 {
     int i;
     int argc;
     int status;
     int len;
     char** argv;
+
+    mgr = AAssetManager_fromJava(env, am);
 
     /* This interface could expand with ABI negotiation, callbacks, etc. */
     SDL_Android_Init(env, cls);

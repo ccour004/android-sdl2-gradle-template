@@ -23,6 +23,8 @@
 #define _SDL_main_h
 
 #include "SDL_stdinc.h"
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 /**
  *  \file SDL_main.h
@@ -65,6 +67,7 @@
 
    See README-android.md for more details on extending that class.
  */
+AAssetManager *mgr;
 #define SDL_MAIN_NEEDED
 
 #elif defined(__NACL__)
